@@ -1,41 +1,4 @@
-#include <Arduino.h>
-#include <Adafruit_Sensor.h>
-#include <SPI.h>
-#include <Wire.h>
-
-#include "RTClib.h"
-#include <DHT.h>
-#include <MQUnifiedsensor.h>
-
-// DHT 22
-#define DHTPIN 10     // DHT PIN Analog 1
-#define DHTTYPE DHT22 // DHT 22  (AM2302), AM2321
-DHT dht(DHTPIN, DHTTYPE);
-
-// RTC
-RTC_DS1307 rtc;
-char namaHari[7][12] = {"Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"};
-
-// MQ4
-/************************Hardware Related Macros************************************/
-#define Board ("Arduino UNO")
-#define Pin (A3) // Analog input 4 of your arduino
-/***********************Software Related Macros************************************/
-#define Type ("MQ-4") // MQ4
-#define Voltage_Resolution (5)
-#define ADC_Bit_Resolution (10) // For arduino UNO/MEGA/NANO
-#define RatioMQ4CleanAir (8)    // RS / R0 = 60 ppm
-/*****************************Globals***********************************************/
-MQUnifiedsensor MQ4(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, Type);
-
-// ULTRASONIC
-#define echoPin 8
-#define trigPin 9
-long duration, distance;
-
-// LED DAN BUZZER
-int led = 6;
-int buzz = 7;
+#include "config.h"
 
 void setup()
 {
