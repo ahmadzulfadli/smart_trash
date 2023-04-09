@@ -7,10 +7,10 @@ Sistem ini dirancang untuk memonitoring tingkat ketinggian sampah, kadar gas met
 
 ## Fitur
 
--Memantau ketinggian sampah
--Memantau kadar gas metana dalam tong sampah
--Memantau kelembapan udara dalam tong sampah
--Memberikan peringatan jika sampah sudah penuh atau berpotensi menyebabkan penyakit
+- Memantau ketinggian sampah
+- Memantau kadar gas metana dalam tong sampah
+- Memantau kelembapan udara dalam tong sampah
+- Memberikan peringatan jika sampah sudah penuh atau berpotensi menyebabkan penyakit
 
 ## Requirements
 
