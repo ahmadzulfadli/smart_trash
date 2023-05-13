@@ -3,7 +3,14 @@
 ## Smart Trash menggunakan Arduino Uno
 ## Deskripsi
 
-Sistem ini dirancang untuk memonitoring tingkat ketinggian sampah, kadar gas metana, dan kelembapan udara dalam tong sampah. Sistem ini dibangun menggunakan Arduino Uno, sensor Ultrasonic, sensor MQ-4, dan sensor DHT22.
+Sistem ini dirancang untuk memonitoring tingkat ketinggian sampah, kadar gas metana, dan kelembapan udara dalam tong sampah. Sistem ini dirancang menggunakan Arduino Uno, LCD 20X4, sensor Ultrasonic, sensor MQ-4, dan sensor DHT22.
+
+## Library yang Dibutuhkan
+
+- RTClib.h
+- DHT.h
+- MQUnifiedsensor.h
+- LiquidCrystal_I2C.h
 
 ## Fitur
 
@@ -15,6 +22,7 @@ Sistem ini dirancang untuk memonitoring tingkat ketinggian sampah, kadar gas met
 ## Requirements
 
 - Arduino Uno
+- LCD 20X4
 - Sensor Ultrasonic HC-SR04
 - Sensor MQ-4
 - Sensor DHT22
@@ -30,8 +38,8 @@ Sistem ini dirancang untuk memonitoring tingkat ketinggian sampah, kadar gas met
 - Sensor MQ-4 digunakan untuk memantau kadar gas metana dalam tong sampah
 - Sensor DHT22 digunakan untuk memantau kelembapan udara dalam tong sampah
 - RTC Module digunakan untuk memantau waktu dan tanggal
-- Data yang dikumpulkan oleh sensor akan ditampilkan pada Serial Monitor
-- Jika tingkat ketinggian sampah sudah mencapai batas maksimal, LED dan Buzzer akan menyala sebagai peringatan
+- Data yang dikumpulkan oleh sensor akan ditampilkan pada LCD 20X4
+- Jika Gas Metana tinggi atau kelembapan sampah sudah mencapai nilai threshold atau tingkat ketinggian sampah sudah mencapai batas maksimal, maka LED dan Buzzer akan menyala sebagai peringatan
 
 ## Cara Instalasi
 
