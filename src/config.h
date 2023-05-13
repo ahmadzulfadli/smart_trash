@@ -10,6 +10,8 @@
 #include <DHT.h>
 #include <MQUnifiedsensor.h>
 
+#include <LiquidCrystal_I2C.h>
+
 // DHT 22
 #define DHTPIN 10
 #define DHTTYPE DHT22
@@ -25,7 +27,7 @@ char namaHari[7][12] = {"Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "
 #define Type ("MQ-4")
 #define Voltage_Resolution (5)
 #define ADC_Bit_Resolution (10)
-#define RatioMQ4CleanAir (8) // RS / R0 = 60 ppm
+#define RatioMQ4CleanAir (6) // RS / R0 = 60 ppm
 
 MQUnifiedsensor MQ4(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, Type);
 
@@ -34,8 +36,11 @@ MQUnifiedsensor MQ4(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, Type);
 #define trigPin 9
 long duration, distance;
 
-// LED DAN BUZZER
+// LED AND BUZZER
 #define led 6
 #define buzz 7
+
+// LCD 20x4
+LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 #endif

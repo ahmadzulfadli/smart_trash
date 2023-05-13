@@ -1,5 +1,31 @@
 #include "config.h"
 
+int kolom = 20;
+int baris = 4;
+
+void TulisanBergerak(int row, String message, int delayTime, int kolom)
+{
+    for (int i = 0; i < kolom; i++)
+    {
+        message = " " + message;
+    }
+    message = message + " ";
+    for (int pos = 0; pos < message.length(); pos++)
+    {
+        lcd.setCursor(0, row);
+        lcd.print(message.substring(pos, pos + kolom));
+        delay(delayTime);
+    }
+}
+
+void buzzer_berbunyi()
+{
+    digitalWrite(buzz, HIGH);
+    delay(1000);
+    digitalWrite(buzz, LOW);
+    delay(1000);
+}
+
 void setup()
 {
 
@@ -57,11 +83,13 @@ void setup()
     pinMode(trigPin, OUTPUT);
     pinMode(echoPin, INPUT);
 
-    // LED DAN BUZZER
+    // LED AND BUZZER
     pinMode(led, OUTPUT);
     pinMode(buzz, OUTPUT);
 
-    // LCD
+    // LCD 20x4
+    lcd.init();
+    lcd.backlight();
 }
 
 void loop()
@@ -91,61 +119,136 @@ void loop()
     // LOGIKA SISTEM================================
 
     // ketinggian sampah
-    if (distance > 40)
+    if (distance > 35)
     {
-        distance = 40;
+        distance = 35;
     }
     else
     {
         distance = distance;
     }
 
-    unsigned int capasity = map(distance, 40, 2, 0, 100);
+    Serial.print("Jarak: ");
+    Serial.print(distance);
+    Serial.println(" cm");
+
+    unsigned int capasity = map(distance, 35, 2, 0, 100);
+
+    // STATUS SMART TRASH
+    int status_sampah, status_humd, status_ppm;
 
     if (capasity > 95)
     {
-        Serial.println("Sampah Penuh Berpotensi Penyakit");
+        status_sampah = 1;
+    }
+    else
+    {
+        status_sampah = 0;
     }
 
     // kelembapan udara dalam tong sampah
-    if (humd > 85)
+    if (humd > 90)
     {
-        Serial.println("Sampah Lembab Berpotensi Penyakit");
+        status_humd = 1;
+    }
+    else
+    {
+        status_humd = 0;
     }
 
     // kadar gas metana dalam tong sampah
     if (ppmCH4 > 500)
     {
-        Serial.println("Sampah Busuk Berpotensi Penyakit");
+        status_ppm = 1;
+    }
+    else
+    {
+        status_ppm = 0;
     }
 
-    //==============================================
+    // SHOW TITLE TO LCD
+    lcd.setCursor(0, 0);
+    lcd.print("SMART TRASH");
 
-    // MENAMPILKAN HASIL KE SERIAL MONITOR
-    Serial.print("Waktu: ");
-    Serial.print(now.hour(), DEC);
-    Serial.print(':');
-    Serial.print(now.minute(), DEC);
-    Serial.println("");
+    // SHOW TIME TO LCD
+    lcd.setCursor(14, 0);
+    lcd.print(now.hour(), DEC);
+    lcd.print(':');
+    lcd.print(now.minute(), DEC);
 
-    Serial.print("Temperature: ");
-    Serial.print(temp);
-    Serial.println("");
+    // SHOW TEMPERATURE TO LCD
+    lcd.setCursor(0, 1);
+    lcd.print("T:");
+    lcd.print(temp);
+    lcd.print("C");
 
-    Serial.print("Humidity: ");
-    Serial.print(humd);
-    Serial.println("");
+    // SHOW HUMIDITY TO LCD 20x4
+    lcd.setCursor(10, 1);
+    lcd.print("H:");
+    lcd.print(humd);
+    lcd.print("%");
 
-    Serial.print("capasity : ");
-    Serial.print(capasity);
-    Serial.println("");
+    // SHOE CAPASITY TO LCD 20x4
+    lcd.setCursor(0, 2);
+    lcd.print("C:");
+    lcd.print(capasity);
+    lcd.print("%");
 
-    Serial.print("Gas Metana: ");
-    Serial.print(ppmCH4);
-    Serial.println("");
-    Serial.println("");
+    // SHOW PPM TO LCD 20x4
+    lcd.setCursor(10, 2);
+    lcd.print("PPM:");
+    lcd.print(ppmCH4);
 
-    // MENAMPILKAN HASIL KE LCD
+    // SHOW STATUS TEMPERATURE, HUMADITI, CAPASITY AND PPM TO LCD 20x4
+
+    int alaram1_jam = 6;
+    int alaram1_menit = 30;
+
+    int alaram2_jam = 20;
+    int alaram2_menit = 30;
+
+    if (status_sampah == 1)
+    {
+        TulisanBergerak(3, "Sampah Penuh Berpotensi Penyakit", 500, kolom);
+
+        digitalWrite(led, HIGH);
+
+        if (now.hour() == alaram1_jam and now.minute() == alaram1_menit or now.hour() == alaram2_jam and now.minute() == alaram2_menit)
+        {
+            // maka bunyikan buzzer
+            buzzer_berbunyi();
+        }
+    }
+    else if (status_humd == 1)
+    {
+        TulisanBergerak(3, "Sampah Basah Berpotensi Penyakit", 500, kolom);
+
+        digitalWrite(led, HIGH);
+
+        if (now.hour() == alaram1_jam and now.minute() == alaram1_menit or now.hour() == alaram2_jam and now.minute() == alaram2_menit)
+        {
+            // maka bunyikan buzzer
+            buzzer_berbunyi();
+        }
+    }
+    else if (status_ppm == 1)
+    {
+        TulisanBergerak(3, "Sampah Busuk Berpotensi Penyakit", 500, kolom);
+
+        digitalWrite(led, HIGH);
+
+        if (now.hour() == alaram1_jam and now.minute() == alaram1_menit or now.hour() == alaram2_jam and now.minute() == alaram2_menit)
+        {
+            // maka bunyikan buzzer
+            buzzer_berbunyi();
+        }
+    }
+    else
+    {
+        digitalWrite(led, LOW);
+        TulisanBergerak(3, "C : Belum Penuh H : Normal PPM : Normal", 500, kolom);
+    }
 
     delay(1000);
+    lcd.clear();
 }
