@@ -28,7 +28,6 @@ void buzzer_berbunyi()
 
 void setup()
 {
-
     Serial.begin(9600);
 
     // DHT
@@ -41,43 +40,44 @@ void setup()
         while (1)
             ;
     }
-
-    // MQ4
-    MQ4.setRegressionMethod(1); //_PPM =  a*ratio^b
-    MQ4.setA(1012.7);
-    MQ4.setB(-2.786);
-    MQ4.init();
-    Serial.print("Calibrating please wait.");
-    float calcR0 = 0;
-    for (int i = 1; i <= 10; i++)
-    {
-        MQ4.update(); // Update data, the arduino will read the voltage from the analog pin
-        calcR0 += MQ4.calibrate(RatioMQ4CleanAir);
-        Serial.print(".");
-    }
-    MQ4.setR0(calcR0 / 10);
-    Serial.println("  done!.");
-
-    if (isinf(calcR0))
-    {
-        Serial.println("Warning: Conection issue, R0 is infinite (Open circuit detected) please check your wiring and supply");
-        while (1)
-            ;
-    }
-    if (calcR0 == 0)
-    {
-        Serial.println("Warning: Conection issue found, R0 is zero (Analog pin shorts to ground) please check your wiring and supply");
-        while (1)
-            ;
-    }
-    MQ4.serialDebug(false);
-
     // RTC
     if (!rtc.isrunning())
     {
         Serial.println("RTC is NOT running!");
         rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); // update rtc dari waktu komputer
     }
+    // MQ4
+    mq4.setRegressionMethod(1); //_PPM =  a*ratio^b
+    mq4.setA(1012.7);
+    mq4.setB(-2.786); // Configurate the ecuation values to get CH4 concentration
+
+    mq4.begin(); // Here you need to specify I2C address of sensor.
+    Serial.print("Calibrating please wait.");
+    float calcR0 = 0;
+    for (int i = 1; i <= 10; i++)
+    {
+        mq4.update(); // Update data, the arduino will be read the voltage on the analog pin
+        calcR0 += mq4.calibrate(RatioMQ4CleanAir);
+        Serial.print(".");
+    }
+    mq4.setR0(calcR0 / 10);
+    Serial.println("  done!.");
+
+    if (isinf(calcR0))
+    {
+        Serial.println("Warning: Conection issue founded, R0 is infite (Open circuit detected) please check your "
+                       "wiring and supply");
+        while (1)
+            ;
+    }
+    if (calcR0 == 0)
+    {
+        Serial.println("Warning: Conection issue founded, R0 is zero (Analog pin with short circuit to ground) please "
+                       "check your wiring and supply");
+        while (1)
+            ;
+    }
+    //mq4.serialDebug(true);
 
     // ULTRASONIC
     pinMode(trigPin, OUTPUT);
@@ -102,8 +102,8 @@ void loop()
     float humd = dht.readHumidity();
 
     // MQ4
-    MQ4.update();
-    float ppmCH4 = MQ4.readSensor();
+    mq4.update();
+    float ppmCH4 = mq4.readSensor();
 
     // ULTRASONIC
     digitalWrite(trigPin, LOW);
@@ -198,6 +198,8 @@ void loop()
     lcd.setCursor(10, 2);
     lcd.print("PPM:");
     lcd.print(ppmCH4);
+    Serial.print("PPM:");
+    Serial.println(ppmCH4);
 
     // SHOW STATUS TEMPERATURE, HUMADITI, CAPASITY AND PPM TO LCD 20x4
 

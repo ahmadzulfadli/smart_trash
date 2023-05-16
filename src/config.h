@@ -8,7 +8,7 @@
 
 #include "RTClib.h"
 #include <DHT.h>
-#include <MQUnifiedsensor.h>
+#include "MQ-Sensor-SOLDERED.h"
 
 #include <LiquidCrystal_I2C.h>
 
@@ -22,14 +22,10 @@ RTC_DS1307 rtc;
 char namaHari[7][12] = {"Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"};
 
 // MQ4
-#define Board ("Arduino UNO")
-#define Pin (A3)
-#define Type ("MQ-4")
-#define Voltage_Resolution (5)
-#define ADC_Bit_Resolution (10)
-#define RatioMQ4CleanAir (6) // RS / R0 = 60 ppm
+#define SENSOR_ANALOG_PIN A3
+#define RatioMQ4CleanAir (4.4) // RS / R0 = 60 ppm
 
-MQUnifiedsensor MQ4(Board, Voltage_Resolution, ADC_Bit_Resolution, Pin, Type);
+MQ2 mq4(SENSOR_ANALOG_PIN);
 
 // ULTRASONIC
 #define echoPin 8
