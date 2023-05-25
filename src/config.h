@@ -22,9 +22,8 @@ RTC_DS1307 rtc;
 char namaHari[7][12] = {"Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"};
 
 // MQ4
-#define SENSOR_ANALOG_PIN A3
 #define RatioMQ4CleanAir (4.4) // RS / R0 = 60 ppm
-
+#define SENSOR_ANALOG_PIN A3
 MQ2 mq4(SENSOR_ANALOG_PIN);
 
 // ULTRASONIC

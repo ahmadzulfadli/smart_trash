@@ -47,11 +47,24 @@ void setup()
         rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); // update rtc dari waktu komputer
     }
     // MQ4
+    // Set math model to calculate the PPM concentration and the value of constants
     mq4.setRegressionMethod(1); //_PPM =  a*ratio^b
     mq4.setA(1012.7);
     mq4.setB(-2.786); // Configurate the ecuation values to get CH4 concentration
+    /*
+      Exponential regression:
+    Gas    | a      | b
+    LPG    | 3811.9 | -3.113
+    CH4    | 1012.7 | -2.786
+    CO     | 200000000000000 | -19.05
+    Alcohol| 60000000000 | -14.01
+    smoke  | 30000000 | -8.308
+    */
 
-    mq4.begin(); // Here you need to specify I2C address of sensor.
+    /*****************************  MQ Init ********************************************/
+    // Remarks: Configure the pin of arduino as input.
+    /************************************************************************************/
+    mq4.begin();
     Serial.print("Calibrating please wait.");
     float calcR0 = 0;
     for (int i = 1; i <= 10; i++)
@@ -77,7 +90,8 @@ void setup()
         while (1)
             ;
     }
-    //mq4.serialDebug(true);
+
+    mq4.serialDebug(true);
 
     // ULTRASONIC
     pinMode(trigPin, OUTPUT);
