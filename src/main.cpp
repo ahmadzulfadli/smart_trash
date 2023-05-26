@@ -46,34 +46,35 @@ void setup()
         Serial.println("RTC is NOT running!");
         rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); // update rtc dari waktu komputer
     }
-    // MQ4
+    // MQ135
     // Set math model to calculate the PPM concentration and the value of constants
-    mq4.setRegressionMethod(1); //_PPM =  a*ratio^b
-    mq4.setA(1012.7);
-    mq4.setB(-2.786); // Configurate the ecuation values to get CH4 concentration
+    mq135.setRegressionMethod(1); //_PPM =  a*ratio^b
+    mq135.setA(102.2);
+    mq135.setB(-2.473); // Configurate the ecuation values to get NH4 concentration
+
     /*
       Exponential regression:
-    Gas    | a      | b
-    LPG    | 3811.9 | -3.113
-    CH4    | 1012.7 | -2.786
-    CO     | 200000000000000 | -19.05
-    Alcohol| 60000000000 | -14.01
-    smoke  | 30000000 | -8.308
+    GAS      | a      | b
+    CO       | 605.18 | -3.937
+    Alcohol  | 77.255 | -3.18
+    CO2      | 110.47 | -2.862
+    Tolueno  | 44.947 | -3.445
+    NH4      | 102.2  | -2.473
+    Acetona  | 34.668 | -3.369
     */
 
     /*****************************  MQ Init ********************************************/
     // Remarks: Configure the pin of arduino as input.
     /************************************************************************************/
-    mq4.begin();
     Serial.print("Calibrating please wait.");
     float calcR0 = 0;
     for (int i = 1; i <= 10; i++)
     {
-        mq4.update(); // Update data, the arduino will be read the voltage on the analog pin
-        calcR0 += mq4.calibrate(RatioMQ4CleanAir);
+        mq135.update(); // Update data, the arduino will be read the voltage on the analog pin
+        calcR0 += mq135.calibrate(RatioMQ135CleanAir);
         Serial.print(".");
     }
-    mq4.setR0(calcR0 / 10);
+    mq135.setR0(calcR0 / 10);
     Serial.println("  done!.");
 
     if (isinf(calcR0))
@@ -90,8 +91,8 @@ void setup()
         while (1)
             ;
     }
-
-    mq4.serialDebug(true);
+    /*****************************  MQ CAlibration ********************************************/
+    mq135.serialDebug(true);
 
     // ULTRASONIC
     pinMode(trigPin, OUTPUT);
@@ -115,9 +116,9 @@ void loop()
     float temp = dht.readTemperature();
     float humd = dht.readHumidity();
 
-    // MQ4
-    mq4.update();
-    float ppmCH4 = mq4.readSensor();
+    // mq135
+    mq135.update();
+    float ppmnh4 = mq135.readSensor();
 
     // ULTRASONIC
     digitalWrite(trigPin, LOW);
@@ -161,7 +162,7 @@ void loop()
     }
 
     // kelembapan udara dalam tong sampah
-    if (humd > 90)
+    if (humd > 85)
     {
         status_humd = 1;
     }
@@ -171,7 +172,7 @@ void loop()
     }
 
     // kadar gas metana dalam tong sampah
-    if (ppmCH4 > 500)
+    if (ppmnh4 > 100)
     {
         status_ppm = 1;
     }
@@ -180,40 +181,24 @@ void loop()
         status_ppm = 0;
     }
 
-    // SHOW TITLE TO LCD
-    lcd.setCursor(0, 0);
-    lcd.print("SMART TRASH");
-
-    // SHOW TIME TO LCD
-    lcd.setCursor(14, 0);
-    lcd.print(now.hour(), DEC);
-    lcd.print(':');
-    lcd.print(now.minute(), DEC);
-
-    // SHOW TEMPERATURE TO LCD
-    lcd.setCursor(0, 1);
-    lcd.print("T:");
-    lcd.print(temp);
-    lcd.print("C");
-
-    // SHOW HUMIDITY TO LCD 20x4
-    lcd.setCursor(10, 1);
-    lcd.print("H:");
-    lcd.print(humd);
-    lcd.print("%");
-
     // SHOE CAPASITY TO LCD 20x4
     lcd.setCursor(0, 2);
-    lcd.print("C:");
+    lcd.print("Kapasitas:");
     lcd.print(capasity);
     lcd.print("%");
 
+    // SHOW HUMIDITY TO LCD 20x4
+    lcd.setCursor(0, 1);
+    lcd.print("Kelembaban:");
+    lcd.print(humd);
+    lcd.print("%");
+
     // SHOW PPM TO LCD 20x4
-    lcd.setCursor(10, 2);
-    lcd.print("PPM:");
-    lcd.print(ppmCH4);
+    lcd.setCursor(0, 3);
+    lcd.print("Gas Metana:");
+    lcd.print(ppmnh4);
     Serial.print("PPM:");
-    Serial.println(ppmCH4);
+    Serial.println(ppmnh4);
 
     // SHOW STATUS TEMPERATURE, HUMADITI, CAPASITY AND PPM TO LCD 20x4
 
@@ -225,7 +210,7 @@ void loop()
 
     if (status_sampah == 1)
     {
-        TulisanBergerak(3, "Sampah Penuh Berpotensi Penyakit", 500, kolom);
+        TulisanBergerak(0, "Sampah Penuh Berpotensi Penyakit", 500, kolom);
 
         digitalWrite(led, HIGH);
 
@@ -237,7 +222,7 @@ void loop()
     }
     else if (status_humd == 1)
     {
-        TulisanBergerak(3, "Sampah Basah Berpotensi Penyakit", 500, kolom);
+        TulisanBergerak(0, "Sampah Basah Berpotensi Penyakit", 500, kolom);
 
         digitalWrite(led, HIGH);
 
@@ -249,7 +234,7 @@ void loop()
     }
     else if (status_ppm == 1)
     {
-        TulisanBergerak(3, "Sampah Busuk Berpotensi Penyakit", 500, kolom);
+        TulisanBergerak(0, "Sampah Busuk Berpotensi Penyakit", 500, kolom);
 
         digitalWrite(led, HIGH);
 
@@ -261,10 +246,18 @@ void loop()
     }
     else
     {
+        // SHOW TITLE TO LCD
+        lcd.setCursor(0, 0);
+        lcd.print("SMART TRASH");
+
+        // SHOW TIME TO LCD
+        lcd.setCursor(14, 0);
+        lcd.print(now.hour(), DEC);
+        lcd.print(':');
+        lcd.print(now.minute(), DEC);
         digitalWrite(led, LOW);
-        TulisanBergerak(3, "C : Belum Penuh H : Normal PPM : Normal", 500, kolom);
     }
 
-    delay(1000);
+    delay(3000);
     lcd.clear();
 }
