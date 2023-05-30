@@ -38,4 +38,4 @@ long duration, distance;
 // LCD 20x4
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
-#endif
+#endif // SMART_TRASH_CONFIG_H

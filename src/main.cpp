@@ -3,6 +3,12 @@
 int kolom = 20;
 int baris = 4;
 
+int alaram1_jam = 6;
+int alaram1_menit = 30;
+
+int alaram2_jam = 20;
+int alaram2_menit = 30;
+
 void TulisanBergerak(int row, String message, int delayTime, int kolom)
 {
     for (int i = 0; i < kolom; i++)
@@ -40,7 +46,6 @@ void setup()
         while (1)
             ;
     }
-    // RTC
     if (!rtc.isrunning())
     {
         Serial.println("RTC is NOT running!");
@@ -92,7 +97,7 @@ void setup()
             ;
     }
     /*****************************  MQ CAlibration ********************************************/
-    mq135.serialDebug(true);
+    // mq135.serialDebug(true);
 
     // ULTRASONIC
     pinMode(trigPin, OUTPUT);
@@ -172,7 +177,7 @@ void loop()
     }
 
     // kadar gas metana dalam tong sampah
-    if (ppmnh4 > 100)
+    if (ppmnh4 > 20)
     {
         status_ppm = 1;
     }
@@ -183,30 +188,24 @@ void loop()
 
     // SHOE CAPASITY TO LCD 20x4
     lcd.setCursor(0, 2);
-    lcd.print("Kapasitas:");
+    lcd.print("Kapasitas: ");
     lcd.print(capasity);
     lcd.print("%");
 
     // SHOW HUMIDITY TO LCD 20x4
     lcd.setCursor(0, 1);
-    lcd.print("Kelembaban:");
+    lcd.print("Kelembaban: ");
     lcd.print(humd);
     lcd.print("%");
 
     // SHOW PPM TO LCD 20x4
     lcd.setCursor(0, 3);
-    lcd.print("Gas Metana:");
+    lcd.print("Gas Amonia: ");
     lcd.print(ppmnh4);
     Serial.print("PPM:");
     Serial.println(ppmnh4);
 
     // SHOW STATUS TEMPERATURE, HUMADITI, CAPASITY AND PPM TO LCD 20x4
-
-    int alaram1_jam = 6;
-    int alaram1_menit = 30;
-
-    int alaram2_jam = 20;
-    int alaram2_menit = 30;
 
     if (status_sampah == 1)
     {
