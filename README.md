@@ -1,13 +1,13 @@
 # Smart Trash
 
-## Smart Trash menggunakan Arduino Uno
+## Smart Trash menggunakan ESP32
+
 ## Deskripsi
 
-Sistem ini dirancang untuk memonitoring tingkat ketinggian sampah, kadar gas amonia dan kelembapan udara dalam tong sampah. Sistem ini dirancang menggunakan Arduino Uno, LCD 20X4, sensor Ultrasonic, sensor MQ-135, dan sensor DHT22.
+Sistem ini dirancang untuk memonitoring tingkat ketinggian sampah, kadar gas amonia dan kelembapan udara dalam tong sampah. Sistem ini dirancang menggunakan ESP32, LCD 20X4, sensor Ultrasonic, sensor MQ-135, dan sensor DHT22.
 
 ## Library yang Dibutuhkan
 
-- RTClib.h
 - DHT.h
 - MQUnifiedsensor.h
 - LiquidCrystal_I2C.h
@@ -21,13 +21,12 @@ Sistem ini dirancang untuk memonitoring tingkat ketinggian sampah, kadar gas amo
 
 ## Requirements
 
-- Arduino Uno
+- ESP32
 - LCD 20X4
 - Sensor Ultrasonic HC-SR04
 - Sensor MQ-135
 - Sensor DHT22
 - LED dan Buzzer
-- RTC Module
 - Breadboard
 - Jumper Wires
 - Power supply
@@ -35,15 +34,8 @@ Sistem ini dirancang untuk memonitoring tingkat ketinggian sampah, kadar gas amo
 ## Cara Kerja
 
 - Sensor Ultrasonic digunakan untuk memantau tingkat ketinggian sampah pada tong sampah
-- Sensor MQ-135 digunakan untuk memantau kadar gas amonia dalam tong sampah
+- Sensor MQ-135 digunakan untuk memantau kadar Gas Amonia dalam tong sampah
 - Sensor DHT22 digunakan untuk memantau kelembapan udara dalam tong sampah
 - RTC Module digunakan untuk memantau waktu dan tanggal
 - Data yang dikumpulkan oleh sensor akan ditampilkan pada LCD 20X4
-- Jika Gas Metana tinggi atau kelembapan sampah sudah mencapai nilai threshold atau tingkat ketinggian sampah sudah mencapai batas maksimal, maka LED dan Buzzer akan menyala sebagai peringatan
-
-## Cara Instalasi
-
-- Hubungkan Arduino Uno dengan komputer
-- Buka file program (.ino) menggunakan Arduino IDE
-- Upload program ke Arduino Uno
-- Sistem siap digunakan
+- Jika Gas Amonia tinggi atau kelembapan sampah sudah mencapai nilai threshold atau tingkat ketinggian sampah sudah mencapai batas maksimal, maka LED dan Buzzer akan menyala sebagai peringatan
