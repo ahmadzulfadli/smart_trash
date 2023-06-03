@@ -2,14 +2,13 @@
 #define SMART_TRASH_CONFIG_H
 
 #include <Arduino.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 #include <Adafruit_Sensor.h>
 #include <SPI.h>
-#include <Wire.h>
 
 #include <DHT.h>
 #include "MQ-Sensor-SOLDERED.h"
-
-#include <LiquidCrystal_I2C.h>
 
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -22,7 +21,7 @@ const char *password = "bebaspakai";
 
 // NTP_SET_TIME
 const char *ntpServer = "pool.ntp.org";
-const long gmtOffset_sec = 25200;
+const long gmtOffset_sec = 6 * 3600; // Offset WIB: GMT+7
 const int daylightOffset_sec = 3600;
 
 // WHATSAPP
@@ -30,7 +29,7 @@ String phoneNumber = "6289623426138";
 String apiKey = "5981469";
 
 // DHT 22
-#define DHTPIN 4 // D4
+#define DHTPIN 23 // D23
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -49,6 +48,9 @@ long duration, distance;
 #define buzz 15 // D15
 
 // LCD 20x4
+#define I2C_Freq 100000
+#define I2C_SDA 21
+#define I2C_SCL 22
 LiquidCrystal_I2C lcd(0x27, 20, 4); // SDA, SCL PIN 21, 22
 
 int kolom = 20;

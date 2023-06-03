@@ -53,7 +53,14 @@ void buzzer_berbunyi()
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(115200);
+
+    // LCD 20x4
+    // I2C_0.begin(I2C_SDA, I2C_SCL, I2C_Freq);
+    Wire.begin(I2C_SDA, I2C_SCL); // Needed for CTP and LTR329
+
+    lcd.init();
+    lcd.backlight();
 
     // WIFI
     WiFi.begin(ssid, password);
@@ -61,6 +68,9 @@ void setup()
     {
         delay(500);
         Serial.print(".");
+
+        lcd.setCursor(0, 0);
+        lcd.print("Mencari Jaringan ...");
     }
     Serial.println("");
     Serial.println("WiFi connected");
@@ -91,6 +101,8 @@ void setup()
 
     if (isinf(calcR0))
     {
+        lcd.setCursor(0, 0);
+        lcd.print("Koneksi MQ4 ...");
         Serial.println("Warning: Conection issue founded, R0 is infite (Open circuit detected) please check your "
                        "wiring and supply");
         while (1)
@@ -98,13 +110,15 @@ void setup()
     }
     if (calcR0 == 0)
     {
+        lcd.setCursor(0, 0);
+        lcd.print("Koneksi MQ4 ...");
         Serial.println("Warning: Conection issue founded, R0 is zero (Analog pin with short circuit to ground) please "
                        "check your wiring and supply");
         while (1)
             ;
     }
     /*****************************  MQ CAlibration ********************************************/
-    // mq135.serialDebug(true);
+    mq135.serialDebug(true);
 
     // ULTRASONIC
     pinMode(trigPin, OUTPUT);
@@ -114,12 +128,10 @@ void setup()
     pinMode(led, OUTPUT);
     pinMode(buzz, OUTPUT);
 
-    // LCD 20x4
-    lcd.init();
-    lcd.backlight();
-
     // SEND MESSAGE
-    sendMessage("Smart-Trash is ready to use");
+    sendMessage("Mr. Bin is ready to use");
+
+    lcd.clear();
 }
 
 void loop()
@@ -178,7 +190,7 @@ void loop()
 
     if (capasity > 95)
     {
-        status_sampah = 1;
+        status_sampah = 0;
     }
     else
     {
@@ -188,7 +200,7 @@ void loop()
     // kelembapan udara dalam tong sampah
     if (humd > 85)
     {
-        status_humd = 1;
+        status_humd = 0;
     }
     else
     {
@@ -228,7 +240,7 @@ void loop()
 
     if (status_sampah == 1)
     {
-        TulisanBergerak(0, "Sampah Penuh Berpotensi Penyakit", 500, kolom);
+        TulisanBergerak(0, "Sampah Penuh, Segera Buang Sampah", 500, kolom);
 
         digitalWrite(led, HIGH);
 
@@ -240,7 +252,7 @@ void loop()
     }
     else if (status_humd == 1)
     {
-        TulisanBergerak(0, "Sampah Basah Berpotensi Penyakit", 500, kolom);
+        TulisanBergerak(0, "Sampah Basah, Segera Buang Sampah", 500, kolom);
 
         digitalWrite(led, HIGH);
 
@@ -252,7 +264,7 @@ void loop()
     }
     else if (status_ppm == 1)
     {
-        TulisanBergerak(0, "Sampah Busuk Berpotensi Penyakit", 500, kolom);
+        TulisanBergerak(0, "Sampah Busuk, Segera Buang Sampah", 500, kolom);
 
         digitalWrite(led, HIGH);
 
@@ -266,11 +278,18 @@ void loop()
     {
         // SHOW TITLE TO LCD
         lcd.setCursor(0, 0);
-        lcd.print("SMART TRASH");
+        lcd.print("MR. BIN");
+
+        // SHOW TIME TO SERIAL MONITOR
+        Serial.print("Jam: ");
+        Serial.print(hour);
+        Serial.print(":");
+        Serial.print(minute);
+        Serial.print(":");
+        Serial.println(second);
 
         // SHOW TIME TO LCD
-        lcd.setCursor(13, 0);
-        lcd.print("Jam: ");
+        lcd.setCursor(12, 0);
         lcd.print(hour);
         lcd.print(":");
         lcd.print(minute);
