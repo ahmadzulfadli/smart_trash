@@ -185,38 +185,7 @@ void loop()
 
     unsigned int capasity = map(distance, 35, 2, 0, 100);
 
-    // STATUS SMART TRASH
-    int status_sampah, status_humd, status_ppm;
-
-    if (capasity > 95)
-    {
-        status_sampah = 0;
-    }
-    else
-    {
-        status_sampah = 0;
-    }
-
-    // kelembapan udara dalam tong sampah
-    if (humd > 85)
-    {
-        status_humd = 0;
-    }
-    else
-    {
-        status_humd = 0;
-    }
-
-    // kadar gas metana dalam tong sampah
-    if (ppmnh4 > 20)
-    {
-        status_ppm = 1;
-    }
-    else
-    {
-        status_ppm = 0;
-    }
-
+    // dispaly
     // SHOE CAPASITY TO LCD 20x4
     lcd.setCursor(0, 2);
     lcd.print("Kapasitas: ");
@@ -233,14 +202,43 @@ void loop()
     lcd.setCursor(0, 3);
     lcd.print("Gas Amonia: ");
     lcd.print(ppmnh4);
-    Serial.print("PPM:");
-    Serial.println(ppmnh4);
+    lcd.print(" ppm");
 
-    // SHOW STATUS TEMPERATURE, HUMADITI, CAPASITY AND PPM TO LCD 20x4
+    // konversi variabel ke string
+    String str_capasity = String(capasity);
+    String str_humd = String(humd);
+    String str_ppmnh4 = String(ppmnh4);
+    String pesan = "Hallo, ini Mr. Bin\n";
+    pesan += "Kapasitas: " + str_capasity + "%\nKelembaban: " + str_humd + "%\nGas Amonia: " + str_ppmnh4 + " ppm\n";
 
-    if (status_sampah == 1)
+    if (capasity > 90) // kapasitas dalam tong sampah
     {
+        // SEND MESSAGE TO WA
+        if (jumpesan < 1)
+        {
+            pesan += "Sampah Penuh, Segera Buang Sampah";
+            sendMessage(pesan);
+        }
+        jumpesan++;
+
+        digitalWrite(led, HIGH);
+
+        if (hour == alaram1_jam and minute == alaram1_menit or hour == alaram2_jam and minute == alaram2_menit)
+        {
+            // maka bunyikan buzzer
+            buzzer_berbunyi();
+        }
         TulisanBergerak(0, "Sampah Penuh, Segera Buang Sampah", 500, kolom);
+    }
+    else if (capasity > 70) // kapasitas dalam tong sampah
+    {
+        // SEND MESSAGE TO WA
+        if (jumpesan < 1)
+        {
+            pesan += "Sampah Hampir Penuh, Segera Buang Sampah";
+            sendMessage(pesan);
+        }
+        jumpesan++;
 
         digitalWrite(led, HIGH);
 
@@ -249,22 +247,36 @@ void loop()
             // maka bunyikan buzzer
             buzzer_berbunyi();
         }
+        TulisanBergerak(0, "Sampah Hampir Penuh, Segera Buang Sampah", 500, kolom);
     }
-    else if (status_humd == 1)
+    else if (humd > 85) // kelembapan udara dalam tong sampah
     {
+        // SEND MESSAGE TO WA
+        if (jumpesan < 1)
+        {
+            pesan += "Sampah Basah, Segera Buang Sampah";
+            sendMessage(pesan);
+        }
+        jumpesan++;
+
+        digitalWrite(led, HIGH);
+
+        if (hour == alaram1_jam and minute == alaram1_menit or hour == alaram2_jam and minute == alaram2_menit)
+        {
+            // maka bunyikan buzzer
+            buzzer_berbunyi();
+        }
         TulisanBergerak(0, "Sampah Basah, Segera Buang Sampah", 500, kolom);
-
-        digitalWrite(led, HIGH);
-
-        if (hour == alaram1_jam and minute == alaram1_menit or hour == alaram2_jam and minute == alaram2_menit)
-        {
-            // maka bunyikan buzzer
-            buzzer_berbunyi();
-        }
     }
-    else if (status_ppm == 1)
+    else if (ppmnh4 > 20) // kadar gas metana dalam tong sampah
     {
-        TulisanBergerak(0, "Sampah Busuk, Segera Buang Sampah", 500, kolom);
+        // SEND MESSAGE TO WA
+        if (jumpesan < 1)
+        {
+            pesan += "Sampah Busuk, Segera Buang Sampah";
+            sendMessage(pesan);
+        }
+        jumpesan++;
 
         digitalWrite(led, HIGH);
 
@@ -273,8 +285,9 @@ void loop()
             // maka bunyikan buzzer
             buzzer_berbunyi();
         }
+        TulisanBergerak(0, "Sampah Busuk, Segera Buang Sampah", 500, kolom);
     }
-    else
+    else // kapasitas dalam tong sampah normal
     {
         // SHOW TITLE TO LCD
         lcd.setCursor(0, 0);
@@ -297,8 +310,7 @@ void loop()
         lcd.print(second);
 
         digitalWrite(led, LOW);
+        jumpesan = 0;
     }
-
     delay(3000);
-    lcd.clear();
 }
