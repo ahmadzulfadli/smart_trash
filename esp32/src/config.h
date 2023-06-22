@@ -28,7 +28,7 @@ const int daylightOffset_sec = 3600;
 String phoneNumber = "6289623426138";
 String apiKey = "5981469";
 
-int jumpesan;
+int jum_pesan1, jum_pesan2, jum_pesan3, jum_pesan4;
 
 // DHT 22
 #define DHTPIN 23 // D23

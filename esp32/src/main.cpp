@@ -1,55 +1,5 @@
 #include "config.h"
-
-void sendMessage(String message)
-{
-
-    // Data to send with HTTP POST
-    String url = "https://api.callmebot.com/whatsapp.php?phone=" + phoneNumber + "&apikey=" + apiKey + "&text=" + urlEncode(message);
-    HTTPClient http;
-    http.begin(url);
-
-    // Specify content-type header
-    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    // Send HTTP POST request
-    int httpResponseCode = http.POST(url);
-    if (httpResponseCode == 200)
-    {
-        Serial.print("Message sent successfully");
-    }
-    else
-    {
-        Serial.println("Error sending the message");
-        Serial.print("HTTP response code: ");
-        Serial.println(httpResponseCode);
-    }
-
-    // Free resources
-    http.end();
-}
-
-void TulisanBergerak(int row, String message, int delayTime, int kolom)
-{
-    for (int i = 0; i < kolom; i++)
-    {
-        message = " " + message;
-    }
-    message = message + " ";
-    for (int pos = 0; pos < message.length(); pos++)
-    {
-        lcd.setCursor(0, row);
-        lcd.print(message.substring(pos, pos + kolom));
-        delay(delayTime);
-    }
-}
-
-void buzzer_berbunyi()
-{
-    digitalWrite(buzz, HIGH);
-    delay(1000);
-    digitalWrite(buzz, LOW);
-    delay(1000);
-}
+#include "fungsi.h"
 
 void setup()
 {
@@ -214,77 +164,59 @@ void loop()
     if (capasity > 90) // kapasitas dalam tong sampah
     {
         // SEND MESSAGE TO WA
-        if (jumpesan < 1)
+        if (jum_pesan1 < 1)
         {
             pesan += "Sampah Penuh, Segera Buang Sampah";
             sendMessage(pesan);
         }
-        jumpesan++;
+        jum_pesan1++;
 
         digitalWrite(led, HIGH);
-
-        if (hour == alaram1_jam and minute == alaram1_menit or hour == alaram2_jam and minute == alaram2_menit)
-        {
-            // maka bunyikan buzzer
-            buzzer_berbunyi();
-        }
+        alaram(hour, minute, second);
         TulisanBergerak(0, "Sampah Penuh, Segera Buang Sampah", 500, kolom);
     }
     else if (capasity > 70) // kapasitas dalam tong sampah
     {
         // SEND MESSAGE TO WA
-        if (jumpesan < 1)
+        if (jum_pesan2 < 1)
         {
             pesan += "Sampah Hampir Penuh, Segera Buang Sampah";
             sendMessage(pesan);
         }
-        jumpesan++;
+        jum_pesan2++;
 
         digitalWrite(led, HIGH);
 
-        if (hour == alaram1_jam and minute == alaram1_menit or hour == alaram2_jam and minute == alaram2_menit)
-        {
-            // maka bunyikan buzzer
-            buzzer_berbunyi();
-        }
         TulisanBergerak(0, "Sampah Hampir Penuh, Segera Buang Sampah", 500, kolom);
     }
     else if (humd > 85) // kelembapan udara dalam tong sampah
     {
         // SEND MESSAGE TO WA
-        if (jumpesan < 1)
+        if (jum_pesan3 < 1)
         {
             pesan += "Sampah Basah, Segera Buang Sampah";
             sendMessage(pesan);
         }
-        jumpesan++;
+        jum_pesan3++;
 
         digitalWrite(led, HIGH);
 
-        if (hour == alaram1_jam and minute == alaram1_menit or hour == alaram2_jam and minute == alaram2_menit)
-        {
-            // maka bunyikan buzzer
-            buzzer_berbunyi();
-        }
+        alaram(hour, minute, second);
         TulisanBergerak(0, "Sampah Basah, Segera Buang Sampah", 500, kolom);
     }
-    else if (ppmnh4 > 20) // kadar gas metana dalam tong sampah
+    else if (ppmnh4 > 10) // kadar gas metana dalam tong sampah
     {
         // SEND MESSAGE TO WA
-        if (jumpesan < 1)
+        if (jum_pesan4 < 1)
         {
             pesan += "Sampah Busuk, Segera Buang Sampah";
             sendMessage(pesan);
         }
-        jumpesan++;
+        jum_pesan4++;
 
         digitalWrite(led, HIGH);
 
-        if (hour == alaram1_jam and minute == alaram1_menit or hour == alaram2_jam and minute == alaram2_menit)
-        {
-            // maka bunyikan buzzer
-            buzzer_berbunyi();
-        }
+        alaram(hour, minute, second);
         TulisanBergerak(0, "Sampah Busuk, Segera Buang Sampah", 500, kolom);
     }
     else // kapasitas dalam tong sampah normal
@@ -310,7 +242,10 @@ void loop()
         lcd.print(second);
 
         digitalWrite(led, LOW);
-        jumpesan = 0;
+        jum_pesan1 = 0;
+        jum_pesan2 = 0;
+        jum_pesan3 = 0;
+        jum_pesan4 = 0;
     }
     delay(3000);
 }
