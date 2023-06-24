@@ -2,6 +2,73 @@
 #define SMART_TRASH_FUNGSI_H
 #include <config.h>
 
+void baca_sensor(float &capasity, float &humd, float &ppmnh4)
+{
+    // DHT22
+    humd = dht.readHumidity();
+
+    // mq135
+    mq135.update();
+    ppmnh4 = mq135.readSensor();
+
+    // ULTRASONIC
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    duration = pulseIn(echoPin, HIGH);
+
+    // perhitungan untuk dijadikan jarak
+    distance = duration / 58.2;
+
+    // LOGIKA SISTEM================================
+
+    // ketinggian sampah
+    if (distance > 35)
+    {
+        distance = 35;
+    }
+    else
+    {
+        distance = distance;
+    }
+
+    capasity = map(distance, 35, 2, 0, 100);
+
+    // tampilkan data ke serial monitor
+    Serial.print("Kapasitas: ");
+    Serial.print(capasity);
+    Serial.println("%");
+
+    Serial.print("Kelembaban: ");
+    Serial.print(humd);
+    Serial.println("%");
+
+    Serial.print("Gas Amonia: ");
+    Serial.print(ppmnh4);
+    Serial.println(" ppm");
+
+    // dispaly
+    // SHOE CAPASITY TO LCD 20x4
+    lcd.setCursor(0, 2);
+    lcd.print("Kapasitas: ");
+    lcd.print(capasity);
+    lcd.print("%");
+
+    // SHOW HUMIDITY TO LCD 20x4
+    lcd.setCursor(0, 1);
+    lcd.print("Kelembaban: ");
+    lcd.print(humd);
+    lcd.print("%");
+
+    // SHOW PPM TO LCD 20x4
+    lcd.setCursor(0, 3);
+    lcd.print("Gas Amonia: ");
+    lcd.print(ppmnh4);
+    lcd.print(" ppm");
+}
+
 void sendMessage(String message)
 {
 

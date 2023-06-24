@@ -86,166 +86,121 @@ void setup()
 
 void loop()
 {
-    // GET TIME
-    struct tm timeinfo;
-    if (!getLocalTime(&timeinfo))
+    // millis
+    if ((millis() - lastTime) > timerDelay)
     {
-        Serial.println("Failed to obtain time");
-        return;
-    }
-
-    int hour = timeinfo.tm_hour;
-    int minute = timeinfo.tm_min;
-    int second = timeinfo.tm_sec;
-
-    // DHT22
-    float temp = dht.readTemperature();
-    float humd = dht.readHumidity();
-
-    // mq135
-    mq135.update();
-    float ppmnh4 = mq135.readSensor();
-
-    // ULTRASONIC
-    digitalWrite(trigPin, LOW);
-    delayMicroseconds(2);
-    digitalWrite(trigPin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
-    duration = pulseIn(echoPin, HIGH);
-
-    // perhitungan untuk dijadikan jarak
-    distance = duration / 58.2;
-
-    // LOGIKA SISTEM================================
-
-    // ketinggian sampah
-    if (distance > 35)
-    {
-        distance = 35;
-    }
-    else
-    {
-        distance = distance;
-    }
-
-    Serial.print("Jarak: ");
-    Serial.print(distance);
-    Serial.println(" cm");
-
-    unsigned int capasity = map(distance, 35, 2, 0, 100);
-
-    // dispaly
-    // SHOE CAPASITY TO LCD 20x4
-    lcd.setCursor(0, 2);
-    lcd.print("Kapasitas: ");
-    lcd.print(capasity);
-    lcd.print("%");
-
-    // SHOW HUMIDITY TO LCD 20x4
-    lcd.setCursor(0, 1);
-    lcd.print("Kelembaban: ");
-    lcd.print(humd);
-    lcd.print("%");
-
-    // SHOW PPM TO LCD 20x4
-    lcd.setCursor(0, 3);
-    lcd.print("Gas Amonia: ");
-    lcd.print(ppmnh4);
-    lcd.print(" ppm");
-
-    // konversi variabel ke string
-    String str_capasity = String(capasity);
-    String str_humd = String(humd);
-    String str_ppmnh4 = String(ppmnh4);
-    String pesan = "Hallo, ini Mr. Bin\n";
-    pesan += "Kapasitas: " + str_capasity + "%\nKelembaban: " + str_humd + "%\nGas Amonia: " + str_ppmnh4 + " ppm\n";
-
-    if (capasity > 90) // kapasitas dalam tong sampah
-    {
-        // SEND MESSAGE TO WA
-        if (jum_pesan1 < 1)
+        // GET TIME
+        struct tm timeinfo;
+        if (!getLocalTime(&timeinfo))
         {
-            pesan += "Sampah Penuh, Segera Buang Sampah";
-            sendMessage(pesan);
+            Serial.println("Failed to obtain time");
+            return;
         }
-        jum_pesan1++;
 
-        digitalWrite(led, HIGH);
-        alaram(hour, minute, second);
-        TulisanBergerak(0, "Sampah Penuh, Segera Buang Sampah", 500, kolom);
-    }
-    else if (capasity > 70) // kapasitas dalam tong sampah
-    {
-        // SEND MESSAGE TO WA
-        if (jum_pesan2 < 1)
+        int hour = timeinfo.tm_hour;
+        int minute = timeinfo.tm_min;
+        int second = timeinfo.tm_sec;
+
+        // baca sensor
+        float capasity = 0;
+        float humd = 0;
+        float ppmnh4 = 0;
+
+        baca_sensor(capasity, humd, ppmnh4);
+
+        // konversi variabel ke string
+        String str_capasity = String(capasity);
+        String str_humd = String(humd);
+        String str_ppmnh4 = String(ppmnh4);
+        String pesan = "Hallo, ini Mr. Bin\n";
+        pesan += "Kapasitas: " + str_capasity + "%\nKelembaban: " + str_humd + "%\nGas Amonia: " + str_ppmnh4 + " ppm\n";
+
+        /* if (capasity > 90) // kapasitas dalam tong sampah
         {
-            pesan += "Sampah Hampir Penuh, Segera Buang Sampah";
-            sendMessage(pesan);
+            // SEND MESSAGE TO WA
+            if (jum_pesan1 < 1)
+            {
+                pesan += "Sampah Penuh, Segera Buang Sampah";
+                sendMessage(pesan);
+            }
+            jum_pesan1++;
+
+            digitalWrite(led, HIGH);
+            alaram(hour, minute, second);
+            TulisanBergerak(0, "Sampah Penuh, Segera Buang Sampah", 500, kolom);
         }
-        jum_pesan2++;
-
-        digitalWrite(led, HIGH);
-
-        TulisanBergerak(0, "Sampah Hampir Penuh, Segera Buang Sampah", 500, kolom);
-    }
-    else if (humd > 85) // kelembapan udara dalam tong sampah
-    {
-        // SEND MESSAGE TO WA
-        if (jum_pesan3 < 1)
+        else if (capasity > 70) // kapasitas dalam tong sampah
         {
-            pesan += "Sampah Basah, Segera Buang Sampah";
-            sendMessage(pesan);
+            // SEND MESSAGE TO WA
+            if (jum_pesan2 < 1)
+            {
+                pesan += "Sampah Hampir Penuh, Segera Buang Sampah";
+                sendMessage(pesan);
+            }
+            jum_pesan2++;
+
+            digitalWrite(led, HIGH);
+
+            TulisanBergerak(0, "Sampah Hampir Penuh, Segera Buang Sampah", 500, kolom);
         }
-        jum_pesan3++;
-
-        digitalWrite(led, HIGH);
-
-        alaram(hour, minute, second);
-        TulisanBergerak(0, "Sampah Basah, Segera Buang Sampah", 500, kolom);
-    }
-    else if (ppmnh4 > 10) // kadar gas metana dalam tong sampah
-    {
-        // SEND MESSAGE TO WA
-        if (jum_pesan4 < 1)
+        else if (humd > 85) // kelembapan udara dalam tong sampah
         {
-            pesan += "Sampah Busuk, Segera Buang Sampah";
-            sendMessage(pesan);
+            // SEND MESSAGE TO WA
+            if (jum_pesan3 < 1)
+            {
+                pesan += "Sampah Basah, Segera Buang Sampah";
+                sendMessage(pesan);
+            }
+            jum_pesan3++;
+
+            digitalWrite(led, HIGH);
+
+            alaram(hour, minute, second);
+            TulisanBergerak(0, "Sampah Basah, Segera Buang Sampah", 500, kolom);
         }
-        jum_pesan4++;
+        else if (ppmnh4 > 10) // kadar gas metana dalam tong sampah
+        {
+            // SEND MESSAGE TO WA
+            if (jum_pesan4 < 1)
+            {
+                pesan += "Sampah Busuk, Segera Buang Sampah";
+                sendMessage(pesan);
+            }
+            jum_pesan4++;
 
-        digitalWrite(led, HIGH);
+            digitalWrite(led, HIGH);
 
-        alaram(hour, minute, second);
-        TulisanBergerak(0, "Sampah Busuk, Segera Buang Sampah", 500, kolom);
+            alaram(hour, minute, second);
+            TulisanBergerak(0, "Sampah Busuk, Segera Buang Sampah", 500, kolom);
+        }
+        else // kapasitas dalam tong sampah normal
+        {
+            // SHOW TITLE TO LCD
+            lcd.setCursor(0, 0);
+            lcd.print("MR. BIN");
+
+            // SHOW TIME TO SERIAL MONITOR
+            Serial.print("Jam: ");
+            Serial.print(hour);
+            Serial.print(":");
+            Serial.print(minute);
+            Serial.print(":");
+            Serial.println(second);
+
+            // SHOW TIME TO LCD
+            lcd.setCursor(12, 0);
+            lcd.print(hour);
+            lcd.print(":");
+            lcd.print(minute);
+            lcd.print(":");
+            lcd.print(second);
+
+            digitalWrite(led, LOW);
+            jum_pesan1 = 0;
+            jum_pesan2 = 0;
+            jum_pesan3 = 0;
+            jum_pesan4 = 0;
+        } */
+        lastTime = millis();
     }
-    else // kapasitas dalam tong sampah normal
-    {
-        // SHOW TITLE TO LCD
-        lcd.setCursor(0, 0);
-        lcd.print("MR. BIN");
-
-        // SHOW TIME TO SERIAL MONITOR
-        Serial.print("Jam: ");
-        Serial.print(hour);
-        Serial.print(":");
-        Serial.print(minute);
-        Serial.print(":");
-        Serial.println(second);
-
-        // SHOW TIME TO LCD
-        lcd.setCursor(12, 0);
-        lcd.print(hour);
-        lcd.print(":");
-        lcd.print(minute);
-        lcd.print(":");
-        lcd.print(second);
-
-        digitalWrite(led, LOW);
-        jum_pesan1 = 0;
-        jum_pesan2 = 0;
-        jum_pesan3 = 0;
-        jum_pesan4 = 0;
-    }
-    delay(3000);
 }

@@ -55,6 +55,15 @@ long duration, distance;
 #define I2C_SCL 22
 LiquidCrystal_I2C lcd(0x27, 20, 4); // SDA, SCL PIN 21, 22
 
+// ThingSpeak
+WiFiClient client;
+unsigned long myChannelNumber = 2193834;
+const char *myWriteAPIKey = "ZDBAFDJY7BJPXVFU";
+
+// millis
+unsigned long lastTime = 0;
+unsigned long timerDelay = 3000;
+
 int kolom = 20;
 int baris = 4;
 
