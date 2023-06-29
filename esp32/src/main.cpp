@@ -6,7 +6,6 @@ void setup()
     Serial.begin(115200);
 
     // LCD 20x4
-    // I2C_0.begin(I2C_SDA, I2C_SCL, I2C_Freq);
     Wire.begin(I2C_SDA, I2C_SCL); // Needed for CTP and LTR329
 
     lcd.init();
@@ -115,7 +114,7 @@ void loop()
         String pesan = "Hallo, ini Mr. Bin\n";
         pesan += "Kapasitas: " + str_capasity + "%\nKelembaban: " + str_humd + "%\nGas Amonia: " + str_ppmnh4 + " ppm\n";
 
-        /* if (capasity > 90) // kapasitas dalam tong sampah
+        if (capasity > 90) // kapasitas dalam tong sampah
         {
             // SEND MESSAGE TO WA
             if (jum_pesan1 < 1)
@@ -200,7 +199,11 @@ void loop()
             jum_pesan2 = 0;
             jum_pesan3 = 0;
             jum_pesan4 = 0;
-        } */
+        }
+
+        // kirim data ke webserver
+        kirim_data(capasity, humd, ppmnh4);
+
         lastTime = millis();
     }
 }

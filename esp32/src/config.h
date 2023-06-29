@@ -19,6 +19,10 @@
 const char *ssid = "Raden Mas Wifi";
 const char *password = "bebaspakai";
 
+// web server
+const char *host = "192.168.80.240";
+const int port = 80;
+
 // NTP_SET_TIME
 const char *ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 6 * 3600; // Offset WIB: GMT+7

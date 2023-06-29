@@ -97,6 +97,61 @@ void sendMessage(String message)
     http.end();
 }
 
+// kirim data ke web server
+void kirim_data(float capasity, float humd, float ppmnh4)
+{
+    //--------------------------------------------
+    // Send data to server
+    WiFiClient client;
+    if (!client.connect(host, port))
+    {
+        Serial.println("Connection failed");
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("Connection failed");
+        delay(1000);
+        return;
+    }
+
+    // pengiriman nilai sensor ke web server
+    // windows
+    String apiUrl = "http://localhost/monitoring_trash/crud/kirim_data.php?";
+    // linux
+    // String apiUrl = "http://monitoring_daya/crud/kirim_data.php?";
+
+    apiUrl += "mode=save";
+    apiUrl += "&capasity=" + String(capasity);
+    apiUrl += "&humd=" + String(humd);
+    apiUrl += "&ppmnh4=" + String(ppmnh4);
+
+    // Set header Request
+    client.print(String("GET ") + apiUrl + " HTTP/1.1\r\n" +
+                 "Host: " + host + "\r\n" +
+                 "Connection: close\r\n\r\n");
+
+    // Pastikan tidak berlarut-larut
+    unsigned long timeout = millis();
+    while (client.available() == 0)
+    {
+        if (millis() - timeout > 3000)
+        {
+            Serial.println(">>> Client Timeout !");
+            Serial.println(">>> Operation failed !");
+            client.stop();
+            return;
+        }
+    }
+
+    // Baca hasil balasan dari PHP
+    while (client.available())
+    {
+        String line = client.readStringUntil('\r');
+        Serial.println(line);
+    }
+
+    //--------------------------------------------
+}
+
 void TulisanBergerak(int row, String message, int delayTime, int kolom)
 {
     for (int i = 0; i < kolom; i++)
