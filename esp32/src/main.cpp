@@ -81,6 +81,8 @@ void setup()
     sendMessage("Mr. Bin is ready to use");
 
     lcd.clear();
+
+    ThingSpeak.begin(client);
 }
 
 void loop()
@@ -157,7 +159,7 @@ void loop()
             alaram(hour, minute, second);
             TulisanBergerak(0, "Sampah Basah, Segera Buang Sampah", 500, kolom);
         }
-        else if (ppmnh4 > 10) // kadar gas metana dalam tong sampah
+        else if (ppmnh4 > 5) // kadar gas metana dalam tong sampah
         {
             // SEND MESSAGE TO WA
             if (jum_pesan4 < 1)
@@ -202,7 +204,10 @@ void loop()
         }
 
         // kirim data ke webserver
-        kirim_data(capasity, humd, ppmnh4);
+        // kirim_data(capasity, humd, ppmnh4);
+
+        // kirim data ke thingspeek
+        kirim_data_thingspeak(capasity, humd, ppmnh4);
 
         lastTime = millis();
     }

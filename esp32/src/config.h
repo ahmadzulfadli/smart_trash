@@ -14,14 +14,15 @@
 #include <HTTPClient.h>
 #include <UrlEncode.h>
 #include <time.h>
+#include "ThingSpeak.h"
 
 // NETWORK
-const char *ssid = "Raden Mas Wifi";
-const char *password = "bebaspakai";
+const char *ssid = "Ya";
+const char *password = "34567890";
 
 // web server
-const char *host = "192.168.80.240";
-const int port = 80;
+/* const char *host = "192.168.80.240";
+const int port = 80; */
 
 // NTP_SET_TIME
 const char *ntpServer = "pool.ntp.org";
@@ -61,12 +62,12 @@ LiquidCrystal_I2C lcd(0x27, 20, 4); // SDA, SCL PIN 21, 22
 
 // ThingSpeak
 WiFiClient client;
-unsigned long myChannelNumber = 2193834;
-const char *myWriteAPIKey = "ZDBAFDJY7BJPXVFU";
+unsigned long myChannelNumber = 2208054;
+const char *myWriteAPIKey = "ZQA03MHGZ32FXE5C";
 
 // millis
 unsigned long lastTime = 0;
-unsigned long timerDelay = 3000;
+unsigned long timerDelay = 10000;
 
 int kolom = 20;
 int baris = 4;

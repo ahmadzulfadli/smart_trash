@@ -98,7 +98,7 @@ void sendMessage(String message)
 }
 
 // kirim data ke web server
-void kirim_data(float capasity, float humd, float ppmnh4)
+/* void kirim_data(float capasity, float humd, float ppmnh4)
 {
     //--------------------------------------------
     // Send data to server
@@ -150,7 +150,7 @@ void kirim_data(float capasity, float humd, float ppmnh4)
     }
 
     //--------------------------------------------
-}
+} */
 
 void TulisanBergerak(int row, String message, int delayTime, int kolom)
 {
@@ -188,4 +188,21 @@ void alaram(int jam, int menit, int detik)
     }
 }
 
+void kirim_data_thingspeak(float capasity, float humd, float ppmnh4)
+{
+    // kirim data ke thingspeak
+    ThingSpeak.setField(1, capasity);
+    ThingSpeak.setField(2, humd);
+    ThingSpeak.setField(3, ppmnh4);
+
+    int x = ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
+    if (x == 200)
+    {
+        Serial.println("Channel update successful.");
+    }
+    else
+    {
+        Serial.println("Problem updating channel. HTTP error code " + String(x));
+    }
+}
 #endif // SMART_TRASH_FUNGSI_H
