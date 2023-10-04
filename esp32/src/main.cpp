@@ -78,7 +78,7 @@ void setup()
     pinMode(buzz, OUTPUT);
 
     // SEND MESSAGE
-    sendMessage("Mr. Bin is ready to use");
+    sendMessage("Welcome, Mr. Bin ready to use");
 
     lcd.clear();
 
@@ -159,7 +159,7 @@ void loop()
             alaram(hour, minute, second);
             TulisanBergerak(0, "Sampah Basah, Segera Buang Sampah", 500, kolom);
         }
-        else if (ppmnh4 > 5) // kadar gas metana dalam tong sampah
+        else if (ppmnh4 > 25) // kadar gas metana dalam tong sampah
         {
             // SEND MESSAGE TO WA
             if (jum_pesan4 < 1)

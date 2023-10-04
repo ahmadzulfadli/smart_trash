@@ -1,3 +1,5 @@
+// https://api.watsap.id/send-messageid_device":"4829","api-key":"27c80793b8a81c66c88222d4eced071de5827853","no_hp":"089623426138","pesan":"Mr. Bin is starting"
+
 #ifndef SMART_TRASH_FUNGSI_H
 #define SMART_TRASH_FUNGSI_H
 #include <config.h>
@@ -73,84 +75,31 @@ void sendMessage(String message)
 {
 
     // Data to send with HTTP POST
-    String url = "https://api.callmebot.com/whatsapp.php?phone=" + phoneNumber + "&apikey=" + apiKey + "&text=" + urlEncode(message);
+    // https://wa.srv15.wapanels.com/send-message?api_key=1234567890&sender=62888xxxx&number=62888xxxx&message=Hello
+    String url = "https://wa.srv15.wapanels.com/send-message?api_key=" + apiKey + "&sender=" + sender + "&number=" + reciver + "&message=" + urlEncode(message);
+    Serial.println(url);
     HTTPClient http;
     http.begin(url);
 
     // Specify content-type header
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    // Send HTTP POST request
+    /// Send the GET request
     int httpResponseCode = http.POST(url);
-    if (httpResponseCode == 200)
+
+    if (httpResponseCode > 0)
     {
-        Serial.print("Message sent successfully");
+        Serial.printf("HTTP Response code: %d\n", httpResponseCode);
+        String response = http.getString();
+        Serial.println(response);
     }
     else
     {
-        Serial.println("Error sending the message");
-        Serial.print("HTTP response code: ");
-        Serial.println(httpResponseCode);
+        Serial.printf("HTTP GET request failed, error: %s\n", http.errorToString(httpResponseCode).c_str());
     }
 
-    // Free resources
     http.end();
 }
-
-// kirim data ke web server
-/* void kirim_data(float capasity, float humd, float ppmnh4)
-{
-    //--------------------------------------------
-    // Send data to server
-    WiFiClient client;
-    if (!client.connect(host, port))
-    {
-        Serial.println("Connection failed");
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("Connection failed");
-        delay(1000);
-        return;
-    }
-
-    // pengiriman nilai sensor ke web server
-    // windows
-    String apiUrl = "http://localhost/monitoring_trash/crud/kirim_data.php?";
-    // linux
-    // String apiUrl = "http://monitoring_daya/crud/kirim_data.php?";
-
-    apiUrl += "mode=save";
-    apiUrl += "&capasity=" + String(capasity);
-    apiUrl += "&humd=" + String(humd);
-    apiUrl += "&ppmnh4=" + String(ppmnh4);
-
-    // Set header Request
-    client.print(String("GET ") + apiUrl + " HTTP/1.1\r\n" +
-                 "Host: " + host + "\r\n" +
-                 "Connection: close\r\n\r\n");
-
-    // Pastikan tidak berlarut-larut
-    unsigned long timeout = millis();
-    while (client.available() == 0)
-    {
-        if (millis() - timeout > 3000)
-        {
-            Serial.println(">>> Client Timeout !");
-            Serial.println(">>> Operation failed !");
-            client.stop();
-            return;
-        }
-    }
-
-    // Baca hasil balasan dari PHP
-    while (client.available())
-    {
-        String line = client.readStringUntil('\r');
-        Serial.println(line);
-    }
-
-    //--------------------------------------------
-} */
 
 void TulisanBergerak(int row, String message, int delayTime, int kolom)
 {
@@ -190,6 +139,7 @@ void alaram(int jam, int menit, int detik)
 
 void kirim_data_thingspeak(float capasity, float humd, float ppmnh4)
 {
+
     // kirim data ke thingspeak
     ThingSpeak.setField(1, capasity);
     ThingSpeak.setField(2, humd);

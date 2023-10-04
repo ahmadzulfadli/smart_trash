@@ -20,9 +20,6 @@
 const char *ssid = "Ya";
 const char *password = "34567890";
 
-// web server
-/* const char *host = "192.168.80.240";
-const int port = 80; */
 
 // NTP_SET_TIME
 const char *ntpServer = "pool.ntp.org";
@@ -30,8 +27,10 @@ const long gmtOffset_sec = 6 * 3600; // Offset WIB: GMT+7
 const int daylightOffset_sec = 3600;
 
 // WHATSAPP
-String phoneNumber = "6289623426138";
-String apiKey = "5981469";
+String apiKey = "27c80793b8a81c66c88222d4eced071de5827853";
+String idDevice = "4829";
+String sender = "6289623426138";
+String reciver = "6282268399552";
 
 int jum_pesan1, jum_pesan2, jum_pesan3, jum_pesan4;
 
@@ -78,5 +77,8 @@ int alaram1_menit = 30;
 
 int alaram2_jam = 20;
 int alaram2_menit = 30;
+
+// rekayasa data
+// int count, randata;
 
 #endif // SMART_TRASH_CONFIG_H
