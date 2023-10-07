@@ -27,10 +27,10 @@ const long gmtOffset_sec = 6 * 3600; // Offset WIB: GMT+7
 const int daylightOffset_sec = 3600;
 
 // WHATSAPP
-String apiKey = "27c80793b8a81c66c88222d4eced071de5827853";
-String idDevice = "4829";
-String sender = "6289623426138";
-String reciver = "6282268399552";
+String apiKey = "";
+String idDevice = "";
+String sender = "";
+String reciver = "";
 
 int jum_pesan1, jum_pesan2, jum_pesan3, jum_pesan4;
 
